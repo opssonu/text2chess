@@ -1,5 +1,7 @@
 # ♟️ text2chess
 
+[![CI](https://github.com/opssonu/text2chess/actions/workflows/ci.yml/badge.svg)](https://github.com/opssonu/text2chess/actions/workflows/ci.yml)
+
 Play chess with friends, random opponents or skill-matched bots, **and play slow games by text message**. When it's your turn you get an SMS; reply with `e5`, `Nf3` or `knight to f3`, and you never have to open the app.
 
 > 🚧 Work in progress. Portfolio project showing Python backend development and AWS / Linux / DevOps / SRE practices.
