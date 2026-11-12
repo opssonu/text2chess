@@ -8,19 +8,24 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
     UV_PROJECT_ENVIRONMENT=/opt/venv \
     PATH="/opt/venv/bin:$PATH"
 
+# Apply Debian security patches on top of the base image (keeps Trivy scan clean)
+RUN apt-get update \
+    && apt-get upgrade -y --no-install-recommends \
+    && rm -rf /var/lib/apt/lists/*
+
 COPY --from=ghcr.io/astral-sh/uv:0.5 /uv /usr/local/bin/uv
 WORKDIR /app
 
 # ---------- dev: all deps, code is bind-mounted, hot reload ----------
 FROM base AS dev
 COPY pyproject.toml uv.lock ./
-RUN uv sync --locked --no-install-project
+RUN --mount=type=cache,target=/root/.cache/uv uv sync --locked --no-install-project
 CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
 
 # ---------- prod: runtime deps only, non-root ----------
 FROM base AS prod
 COPY pyproject.toml uv.lock ./
-RUN uv sync --locked --no-dev --no-install-project
+RUN --mount=type=cache,target=/root/.cache/uv uv sync --locked --no-dev --no-install-project
 COPY . .
 RUN useradd --create-home --uid 10001 appuser
 USER appuser
